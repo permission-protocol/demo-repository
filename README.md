@@ -18,3 +18,9 @@ A sample project for testing Permission Protocol's consequence analysis engine.
 ## License
 
 MIT
+
+## Contributing
+
+1. Fork the repository
+2. Create your feature branch
+3. Submit a pull request
