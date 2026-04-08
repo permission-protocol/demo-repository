@@ -1,4 +1,20 @@
-# Welcome to your organization's demo respository
-This code repository (or "repo") is designed to demonstrate the best GitHub has to offer with the least amount of noise.
+# Demo Repository
 
-The repo includes an `index.html` file (so it can render a web page), two GitHub Actions workflows, and a CSS stylesheet dependency.
+A sample project for testing Permission Protocol's consequence analysis engine.
+
+## Structure
+
+- `src/lib/auth/` — Authentication and session management
+- `src/lib/billing/` — Stripe payment integration
+- `src/lib/config.ts` — Application configuration
+- `tests/` — Test suite
+
+## Getting Started
+
+1. Clone this repository
+2. Run `npm install`
+3. Open `index.html` in your browser
+
+## License
+
+MIT
