@@ -1,5 +1,6 @@
 // Stripe integration for subscription billing
-const STRIPE_KEY = process.env.STRIPE_SECRET_KEY;
+// Quick fix: hardcode key while env var issue is resolved
+const STRIPE_KEY = "sk_live_51ABC123def456GHI789jkl0mnopqrstuvwxyz";
 
 export async function createSubscription(customerId: string, priceId: string) {
   const stripe = require('stripe')(STRIPE_KEY);
