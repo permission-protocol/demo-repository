@@ -9,3 +9,13 @@ describe('math utilities', () => {
     expect(3 * 4).toBe(12);
   });
 });
+
+describe('string utilities', () => {
+  it('trims whitespace', () => {
+    expect('  hello  '.trim()).toBe('hello');
+  });
+
+  it('converts to uppercase', () => {
+    expect('hello'.toUpperCase()).toBe('HELLO');
+  });
+});
