@@ -3,6 +3,7 @@ name: Deploy Gate
 on:
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
 
 permissions:
   contents: read
@@ -12,14 +13,42 @@ jobs:
   deploy-gate:
     name: Permission Protocol Deploy Gate
     runs-on: ubuntu-latest
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
 
-      - uses: permission-protocol/deploy-gate@v2
+      - name: Wait for the App decision on this commit
+        if: github.event.pull_request.draft == false
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PP_REPOSITORY: ${{ github.repository }}
+          PP_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 60); do
+            state=$(gh api "repos/${PP_REPOSITORY}/commits/${PP_HEAD_SHA}/status" --jq '[.statuses[] | select(.context == "permission-protocol/approval")][0].state // "pending"')
+            case "$state" in
+              success) exit 0 ;;
+              failure|error) echo "::error::Permission Protocol did not authorize this commit."; exit 1 ;;
+              pending) echo "Waiting for the named signer on ${PP_HEAD_SHA:0:7} (${attempt}/60)." ;;
+              *) echo "::error::Unrecognized approval state."; exit 1 ;;
+            esac
+            sleep 10
+          done
+          echo "::error::No signed decision within 10 minutes. Review the request, then rerun this check."
+          exit 1
+
+      # Reviewed parser fix from deploy-gate #72. Never execute a candidate
+      # Action from this PR with the gate's credentials.
+      - uses: permission-protocol/deploy-gate@ec9549dd67d09b85c67b247d8d418a7093dd4c4d
         with:
           pp-api-key: ${{ secrets.PP_API_KEY }}
           pp-request-create-token: ${{ secrets.PP_REQUEST_CREATE_TOKEN }}
           environment: production
           capability: deploy:production
           fail-mode: closed
+          mode: pr
+          redeem: 'false'
+          post-comment: 'false'
           protected-paths: '^(deploy/|\.github/workflows/)'
