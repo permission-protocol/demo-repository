@@ -1,5 +1,5 @@
 // Session management for demo application
-const SESSION_EXPIRY_SECONDS = 24 * 60 * 60; // 24 hours
+const SESSION_EXPIRY_SECONDS = 12 * 60 * 60; // 12 hours
 
 export function createSession(userId: string) {
   return {
